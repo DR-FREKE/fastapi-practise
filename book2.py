@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Request, Query
+from fastapi import FastAPI, Body, Request, Query, Path
 from fastapi.encoders import jsonable_encoder
 from BookClass import BookClass, Author, Library
 from typing import List, Annotated
@@ -26,7 +26,7 @@ async def get_book_by_rating(book_rating: int):
     return book
 
 
-@app.get("/books/{book_id}/")
+@app.get("/books/{book_id}")
 async def get_book_by_id(book_id: str):
     book = library.find_book(book_id)
     print(book.__repr__())
@@ -44,8 +44,13 @@ async def add_book(book_req: BookModel):
     return book.getId()
 
 
+@app.put("/books/{book_id}")
+async def update_book(book_id: Annotated[str, Path(min_length=1)], book_data: BookModel):
+    get_book_id = library.find_book(book_id).__repr__()
+
+
 @app.patch("/books/{book_id}")
-async def patch_a_book(book_id: str, book_data: BookPatch):
+async def patch_a_book(book_id: Annotated[str, Path(min_length=1)], book_data: BookPatch):
     stored_book = library.find_book(book_id).__repr__()
     stored_book_model = BookPatch(**stored_book)
     print(stored_book_model)
