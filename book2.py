@@ -1,16 +1,20 @@
 from fastapi import FastAPI, Body, Request, Query, Path, Depends
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from BookClass import BookClass, Author, Library, Type
 from typing import List, Annotated
 from Schema.BookSchema import BookModel, BookPatch
 from uuid import uuid4
+from starlette import status
 from middleware.errorhandler import errorHandler
+from middleware.validaterequest import validateRequest
 from Error.customerror import CustomError
 
 app: FastAPI = FastAPI(redoc_url="/book/api/v1")
 
 
+@app.exception_handler(RequestValidationError)
 @app.exception_handler(CustomError)
 async def errorHandler(req: Request, err: CustomError):
     if isinstance(err, CustomError):
@@ -22,7 +26,7 @@ BOOKS: List[BookClass] = []
 library = Library()
 
 
-@app.get("/books/")
+@app.get("/books/", status_code=status.HTTP_200_OK)
 async def get_all_books(query: Request):
     if len(query.query_params.items()) == 0:
         return library.get_all_books()
@@ -30,20 +34,20 @@ async def get_all_books(query: Request):
         library.filter_book(list(query.query_params), query.query_params)
 
 
-@app.get("/books/ratings/")
+@app.get("/books/ratings/", status_code=status.HTTP_200_OK)
 async def get_book_by_rating(book_rating: int = Query(gt=0, lt=6)):
     book = library.find_book_by_type(Type.RATINGS, book_rating)
     return book
 
 
-@app.get("/books/{book_id}")
+@app.get("/books/{book_id}", status_code=status.HTTP_200_OK)
 async def get_book_by_id(book_id: str):
     book = library.find_book(book_id)
     print(book.__repr__())
     return book
 
 
-@app.post("/books/add_books")
+@app.post("/books/add_books", status_code=status.HTTP_201_CREATED)
 async def add_book(book_req: BookModel):
     book = BookClass(**book_req.dict())
     # use this if you wanted to do auto increment
@@ -54,14 +58,14 @@ async def add_book(book_req: BookModel):
     return book.getId()
 
 
-@app.put("/books/{book_id}")
+@app.put("/books/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_book(book_id: Annotated[str, Path(min_length=1)], book_data: BookModel):
     book = BookClass(**book_data.dict())
     edited_book = library.edit_book(book=book, book_id=book_id)
     return edited_book
 
 
-@app.patch("/books/{book_id}")
+@app.patch("/books/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def patch_a_book(book_id: Annotated[str, Path(min_length=1)], book_data: BookPatch):
     stored_book = library.find_book(book_id).__repr__()
     stored_book_model = BookPatch(**stored_book)
@@ -74,7 +78,7 @@ async def patch_a_book(book_id: Annotated[str, Path(min_length=1)], book_data: B
     return jsonable_encoder(updated_data)
 
 
-@app.delete("/books/delete/{book_id}")
+@app.delete("/books/delete/{book_id}", status_code=status.HTTP_200_OK)
 async def delete_book(book_id: Annotated[str, Path(min_length=1)]):
     return library.delete_book(book_id)
 

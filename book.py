@@ -143,6 +143,7 @@ async def delete_book(book_title: str) -> dict[str, str]:
 # this route allows you get multiple query string; thanks to the Request from fastapi
 @app.get("/books/all_query/")
 async def get_book_by_query(req: Request):
+    req.session = {"jwt": "some"}
     query = req.query_params.items()
     print(query)
 
