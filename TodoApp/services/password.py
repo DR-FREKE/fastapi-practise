@@ -11,6 +11,8 @@ class PasswordHash:
         hashed_password = cls.__bcrypt_context.hash(password)
         return hashed_password
 
-    @staticmethod
-    def comparePassword():
-        pass
+    @classmethod
+    def comparePassword(cls, stored_password: str, supplied_password: str):
+        if not cls.__bcrypt_context.verify(supplied_password, stored_password):
+            return False
+        return True
