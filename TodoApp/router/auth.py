@@ -5,23 +5,25 @@ from middlewares.db_middleware import db_dependency
 from model import model
 from fastapi.security import OAuth2PasswordRequestForm
 from controllers.auth_controller import AuthController
+from Error.customerror import BadRequestError
+from services.password import PasswordHash
 
 
 router = APIRouter()
 
 
-# def login_user(username: str, password: str, db) -> None:
-#     user = db.query(model.Users).filter(model.Users.username == username).first()
-#     if not user:
-#         raise BadRequestError("Invalid Credentials")
+def login_user(username: str, password: str, db) -> None:
+    user = db.query(model.Users).filter(model.Users.username == username).first()
+    if not user:
+        raise BadRequestError("Invalid Credentials")
 
-#     password_match = PasswordHash.comparePassword(supplied_password=password, stored_password=user.password)
+    password_match = PasswordHash.comparePassword(supplied_password=password, stored_password=user.password)
 
-#     if not password_match:
-#         raise BadRequestError("Invalid Credentials")
+    if not password_match:
+        raise BadRequestError("Invalid Credentials")
 
-#     # create a JWT
-#     return "JWT"
+    # create a JWT
+    return "JWT"
 
 @router.on_event("startup")
 async def startup_event():
@@ -38,4 +40,4 @@ async def create_user(data: UserSchema, db: db_dependency):
 
 @router.post("/auth/token", status_code=status.HTTP_200_OK)
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
-    return AuthController.login_user(form_data.username, form_data.password)
+    return login_user(form_data.username, form_data.password, db)
