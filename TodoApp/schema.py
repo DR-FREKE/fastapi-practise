@@ -37,3 +37,8 @@ class UserSchema(BaseModel):
                 "password": "Solomon100",
             }
         }
+
+
+class TokenSchema(BaseModel):
+    access_token: str
+    token_type: str

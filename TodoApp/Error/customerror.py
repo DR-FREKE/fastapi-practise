@@ -53,3 +53,14 @@ class DatabaseConnectionError(CustomError):
 
     def serializeError(self) -> List[ErrorType]:
         return [{"message": self.error}]
+
+
+class RequestValidatorError(CustomError):
+    statusCode: int = 400
+    error: str = "Validation Error"
+    
+    def __init__(self):
+        super().__init__("Validation Error")
+    
+    def serializeError(self) -> List[ErrorType]:
+        return [{"message": self.error}]
