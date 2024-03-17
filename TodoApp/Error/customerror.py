@@ -64,3 +64,15 @@ class RequestValidatorError(CustomError):
     
     def serializeError(self) -> List[ErrorType]:
         return [{"message": self.error}]
+    
+
+class NotAuthorizedError(CustomError):
+    statusCode: int = 401
+    __error: str
+
+    def __init__(self, error: str = ''):
+        self.__error = error
+        super().__init__("Not Authorized")
+    
+    def serializeError(self) -> List[ErrorType]:
+        return [{"message": self.__error}]
