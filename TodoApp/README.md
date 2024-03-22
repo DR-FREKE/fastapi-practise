@@ -23,22 +23,26 @@ TodoApp is a web application that allows users to manage their to-do lists. It p
 
 ## Routes
 
-- `/admin/all/todo`: GET - Get all todos in the system.
-- `/admin/all/users`: GET - Get all users in the system.
+- **Admin Routes:**
+  - `/admin/all/todo`: GET - Get all todos in the system.
+  - `/admin/all/users`: GET - Get all users in the system.
+- **Todo Routes:**
+  - `/todo`: GET - Get all todos belonging to a signed in user
+  - `/todo`: POST - Post a todo belonging to a signed in user
 
 ## Dependencies
 
 - FastAPI: Web framework for building APIs.
 - SQLAlchemy: SQL toolkit and Object-Relational Mapping (ORM) library.
 
-## Middleware
+<!-- ## Middleware
 
 - `admin_dependency`: Middleware for authorizing admin access to specific routes.
-- `db_dependency`: Middleware for handling database connections.
+- `db_dependency`: Middleware for handling database connections. -->
 
 ## Contributors
 
-- [Your Name](https://github.com/yourusername)
+- [Solomon Ndifereke](https://github.com/DR-FREKE)
 
 ## License
 
